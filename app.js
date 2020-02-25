@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
+const encrypt = require("mongoose-encryption");
 
 const app = express();
 
@@ -22,19 +23,62 @@ const userSchema = {
   password : String
 };
 
-const User = new mongoose.model("User", userSchema); 
+const User = new mongoose.model("User", userSchema);
 
 app.get("/", function(req,res) {
   res.render("home");
 })
 
-app.get("/login", function(req,res) {
+
+app.route("/login")
+
+.get (function(req,res) {
   res.render("login");
+})
+
+
+.post(function(req,res) {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  console.log(username + ' ' + password)
+
+  User.findOne({email:username},function(err,foundUser) {
+    if (username === foundUser.email && password === foundUser.password) {
+      console.log("found")
+    } else {
+      console.log("issue" + err )
+      console.log(foundUser);
+    }
+  })
 });
 
-app.get("/register", function(req,res) {
-  res.render("secrets");
-});
+// current issue is that usernames aren't set to be unique, so findOne is finding first instance / if passwords don't match - causes issue.
+
+
+
+app.route("/register")
+
+  .get(function(req,res) {
+    res.render("register");
+  })
+
+  .post(function(req,res) {
+    const newUser = new User ({
+      email: req.body.username,
+      password: req.body.password
+    })
+  console.log(newUser);
+  newUser.save(function(err) {
+    if (!err) {
+      res.render("secrets") } else{
+       console.log(err);
+      }
+    })
+  });
+
+
+
 
 app.get("/submit", function(req,res) {
   res.render("submit");
