@@ -18,10 +18,14 @@ mongoose.connect("mongodb://localhost:27017/userDB",
   useUnifiedTopology: true,
   useFindAndModify: false});
 
-const userSchema = {
+const userSchema = new mongoose.Schema ({
   email : String,
   password : String
-};
+});
+
+const secret = "secretcode007";
+
+userSchema.plugin(encrypt,{secret:secret, encryptedFields: ['password']});
 
 const User = new mongoose.model("User", userSchema);
 
@@ -45,7 +49,8 @@ app.route("/login")
 
   User.findOne({email:username},function(err,foundUser) {
     if (username === foundUser.email && password === foundUser.password) {
-      console.log("found")
+      console.log("found");
+      res.render("secrets");
     } else {
       console.log("issue" + err )
       console.log(foundUser);
