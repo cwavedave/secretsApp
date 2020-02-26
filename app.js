@@ -58,10 +58,11 @@ app.route("/login")
     }
   })
 });
-
-// current issue is that usernames aren't set to be unique, so findOne is finding first instance / if passwords don't match - causes issue.
-
-
+// ===================================================================
+// current issue is that usernames aren't set to be unique,
+// so findOne is finding first instance / if passwords don't match -
+// which causes issue.
+// ===================================================================
 
 app.route("/register")
 
@@ -83,14 +84,9 @@ app.route("/register")
     })
   });
 
-
-
-
 app.get("/submit", function(req,res) {
   res.render("submit");
 });
-
-
 
 app.listen(3000,function() {
   console.log("Server has started Port 3000");
