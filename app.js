@@ -4,8 +4,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-var md5 = require('md5');
-
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 const app = express();
 
