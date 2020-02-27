@@ -43,21 +43,20 @@ app.route("/login")
 
 .post(function(req,res) {
   const username = req.body.username;
-  const password = req.body.password;
 
-  console.log(username + ' ' + password)
 
   User.findOne({email:username},function(err,foundUser) {
-    bcrypt.compare(password, foundUser.password, function(err, result) {
+    bcrypt.compare(req.body.password, foundUser.password, function(err, result) {
      if (result === true){
       console.log("found");
       res.render("secrets");
+      console.log(foundUser);
     } else {
       console.log("issue" + err )
-      console.log(foundUser);
     }
   }
 )
+
 })
 });
 // ===================================================================
