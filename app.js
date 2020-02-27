@@ -27,12 +27,13 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 mongoose.connect("mongodb://localhost:27017/userDB",
-    {   useNewUrlParser: true,
+{
+  useNewUrlParser: true,
   useUnifiedTopology: true,
-  useFindAndModify: false});
-
+  useFindAndModify: false
+});
+mongoose.set("useCreateIndex", true);
 
 // Schema is a Mongoose Schema - note open brackets
 // Mongoose schema allows for plugins to be used with it
@@ -42,20 +43,34 @@ const userSchema = new mongoose.Schema ({
   email : String,
   password : String
 });
-// =====================================
+
+// ===========================================
 // Plugin taps into Mongoose Schema userSchema
-// =====================================
+// ===========================================
 
 userSchema.plugin(passportLocalMongoose);
 
 const User = new mongoose.model("User", userSchema);
 
 
+// passportLocalMongoose used to create local login strategy
+
+passport.use(User.createStrategy());
+
+// Passport used to serialize & deseralize User
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// ====================================
+// Order of code with passport is vital
+// ====================================
+
+// ------------------------------------
+// Begin routing
 
 app.get("/", function(req,res) {
   res.render("home");
 })
-
 
 app.route("/login")
 
