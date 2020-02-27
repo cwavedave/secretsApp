@@ -43,19 +43,22 @@ app.route("/login")
 
 .post(function(req,res) {
   const username = req.body.username;
-  const password = md5(req.body.password);
+  const password = req.body.password;
 
   console.log(username + ' ' + password)
 
   User.findOne({email:username},function(err,foundUser) {
-    if (username === foundUser.email && password === foundUser.password) {
+    bcrypt.compare(password, foundUser.password, function(err, result) {
+     if (result === true){
       console.log("found");
       res.render("secrets");
     } else {
       console.log("issue" + err )
       console.log(foundUser);
     }
-  })
+  }
+)
+})
 });
 // ===================================================================
 // current issue is that usernames aren't set to be unique,
@@ -70,17 +73,20 @@ app.route("/register")
   })
 
   .post(function(req,res) {
+
+  bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
     const newUser = new User ({
       email: req.body.username,
-      password: md5(req.body.password)
+      password: hash
     })
-  console.log(newUser);
-  newUser.save(function(err) {
+    console.log(newUser);
+    newUser.save(function(err) {
     if (!err) {
       res.render("secrets") } else{
        console.log(err);
-      }
-    })
+        }
+      })
+    });
   });
 
 app.get("/submit", function(req,res) {
