@@ -4,8 +4,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const saltRounds = 10;
+const session = require("express-session");
+const passport = require("passport");
+const passportLocalMongoose = require("passport-local-mongoose");
 
 const app = express();
 
@@ -43,7 +44,6 @@ app.route("/login")
 
 .post(function(req,res) {
   const username = req.body.username;
-
 
   User.findOne({email:username},function(err,foundUser) {
     bcrypt.compare(req.body.password, foundUser.password, function(err, result) {
