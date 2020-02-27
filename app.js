@@ -1,5 +1,6 @@
 //jshint esversion:6
 require('dotenv').config()
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
@@ -94,8 +95,27 @@ app.route("/register")
   })
 
   .post(function(req,res) {
+    // Middleman from passportLocalMongoose package
+     User.register({username: req.body.username}, req.body.password, function(err,user){
+       if (err) {
+         console.log(err);
+         res.redirect("/register")
+       } else {
+         passport.authenticate("local")(req,res, function() {
+           res.redirect("/secrets");
+         });
 
+       }
+     });
   });
+
+app.get("/secrets", function(req, res) {
+  if (req.isAuthenticated()) {
+    res.render("secrets");
+  } else {
+    res.redirect("/login");
+  }
+});
 
 app.get("/submit", function(req,res) {
   res.render("submit");
