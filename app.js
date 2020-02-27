@@ -18,17 +18,39 @@ app.use(bodyParser.urlencoded({
   extended:true
 }));
 
+app.use(session({
+  secret: "SecretCode",
+  resave: false,
+  saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 mongoose.connect("mongodb://localhost:27017/userDB",
     {   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false});
 
+
+// Schema is a Mongoose Schema - note open brackets
+// Mongoose schema allows for plugins to be used with it
+// Without new.mongoose.Schema and () - it's just a POJO
+
 const userSchema = new mongoose.Schema ({
   email : String,
   password : String
 });
+// =====================================
+// Plugin taps into Mongoose Schema userSchema
+// =====================================
+
+userSchema.plugin(passportLocalMongoose);
 
 const User = new mongoose.model("User", userSchema);
+
+
 
 app.get("/", function(req,res) {
   res.render("home");
@@ -40,7 +62,6 @@ app.route("/login")
 .get (function(req,res) {
   res.render("login");
 })
-
 
 .post(function(req,res) {
   const username = req.body.username;
